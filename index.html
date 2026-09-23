@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AgentSTAR</title>
+  <meta name="description" content="AgentSTAR: Agentic Shape Tracking and Reconstruction from Monocular Videos. Anonymous demo page.">
+  <meta name="keywords" content="AgenticSTAR, AgentSTAR, Agentic STAR, shape tracking, 3D reconstruction, 4D reconstruction, 4D, monocular video, articulated objects, ARCTIC, HOT3D">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- ?v= busts browser caches when a stylesheet or script changes: bump it with the file. -->
+  <link rel="stylesheet" href="css/site.css?v=20260911d">
+  <link rel="stylesheet" href="css/viewer.css?v=20260911d">
+  <script type="importmap">
+  { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <h1>AgentSTAR: Agentic Shape Tracking and Reconstruction from Monocular Videos</h1>
+      <p class="subtitle">Anonymous ICLR submission</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- <section id="abstract">
+      <h2>Abstract</h2>
+      <p>The problem of reconstructing and tracking arbitrary objects from monocular videos remains a challenging one -- primarily due to the wide variety in solid and articulated, textured and textureless objects in the wild.
+In this work, we present a method for shape reconstruction and tracking from video via agentic analysis-by-synthesis. Unlike prior methods which first estimate dense pixel correspondences and then recover object motion from them, our method infers a structured 3D object model, including its geometry and kinematic structure, and uses this model to optimise object track estimates over time.
+In our optimisation loop, a Vision-Language Model (VLM) agent iteratively refines shape or generalised pose through a render-and-compare loop, combining coarse visual reasoning with numerical pose optimisation for precise state estimation. This structured formulation enables our method to track through large motion, articulation, and severe occlusion without relying on pixel-matching objectives. Quantitatively, on ARCTIC, our method substantially outperforms state-of-the-art 3D point-tracking baselines for articulated objects, and on HOT3D it outperforms all evaluated rigid-object tracking baselines.</p>
+    </section> -->
+
+    <!-- The in-the-wild carousel opens the page: no headline, no floor grid, the
+         3D view starts as the capture camera. (No card on the page shows its
+         caption strip; see .viewer-caption in viewer.css.) -->
+    <section id="wild-section" class="examples-section">
+
+      <div id="examples-wild" class="carousel" data-assets="assets/wild/" data-panel="split" data-camera="follow" data-grid="none" data-controls="trackball">
+        <div class="carousel-track" tabindex="-1"></div>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-prev" aria-label="Previous in-the-wild example">‹</button>
+          <div class="carousel-dots" role="tablist"></div>
+          <span class="carousel-counter">– / –</span>
+          <button type="button" class="carousel-next" aria-label="Next in-the-wild example">›</button>
+        </div>
+        <p class="carousel-note"></p>
+      </div>
+
+      <p class="legend">
+        <span><i style="background:#9a9ca1"></i> our mesh</span>
+        <span><i style="background:#e0c341"></i> joint axis and pivot (toggle with ⟲)</span>
+        <span><i style="background:linear-gradient(90deg,#f5a742,#5ad0f0,#f06fa0,#8ee68e)"></i> panel: one colour per part</span>
+      </p>
+    </section>
+
+    <!-- Agentic timelapse: one sentence, then a diagram. Observed frames on the
+         left, the agent's render-and-compare timelapse on the right. -->
+    <section id="timelapse-section">
+      <h2>Agentic optimisation timelapse</h2>
+      <p>We demonstrate how the agent iterates on both reconstruction and pose on two selected frames of a video sequence over time.</p>
+      <figure class="timelapse">
+        <img class="timelapse-frames" src="assets/timelapse/scissors_frames.webp" width="720" height="640"
+             alt="Two observed frames of the scissors capture, side by side" loading="lazy">
+        <span class="timelapse-arrow" aria-hidden="true"></span>
+        <!-- The video carries the viewer cards' timeline (js/timelapse.js): one
+             slider step per video frame, so the iterations can be scrubbed. -->
+        <div class="timelapse-clip">
+          <video class="timelapse-video" width="720" height="640" autoplay muted loop playsinline
+                 data-fps="2.5" data-frames="17" poster="assets/timelapse/scissors_timelapse_poster.webp"
+                 aria-label="Timelapse of the agent refining the scissors model over the two frames">
+            <source src="assets/timelapse/scissors_timelapse.webm" type="video/webm">
+            <source src="assets/timelapse/scissors_timelapse.mp4" type="video/mp4">
+          </video>
+          <div class="viewer-timeline timelapse-timeline">
+            <button type="button" class="viewer-play" aria-label="Play / pause"></button>
+            <input class="viewer-slider" type="range" min="0" max="0" value="0" step="1" aria-label="Iteration">
+            <span class="viewer-count">– / –</span>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <section id="arctic-section" class="examples-section">
+      <h2>Reconstructions on ARCTIC</h2>
+      <div id="examples-arctic" class="carousel" data-assets="assets/arctic/">
+        <div class="carousel-track" tabindex="-1"></div>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-prev" aria-label="Previous ARCTIC example">‹</button>
+          <div class="carousel-dots" role="tablist"></div>
+          <span class="carousel-counter">– / –</span>
+          <button type="button" class="carousel-next" aria-label="Next ARCTIC example">›</button>
+        </div>
+        <p class="carousel-note"></p>
+      </div>
+
+      <p class="legend">
+        <span><i style="background:#48c8d7"></i> our mesh</span>
+        <span><i style="background:#6296ed"></i> GT left hand</span>
+        <span><i style="background:#e77969"></i> GT right hand</span>
+      </p>
+    </section>
+
+    <section id="hot3d-section" class="examples-section">
+      <h2>Reconstructions on HOT3D</h2>
+
+      <div id="examples-hot3d" class="carousel" data-assets="assets/hot3d/" data-panel="bottom-right">
+        <div class="carousel-track" tabindex="-1"></div>
+        <div class="carousel-nav">
+          <button type="button" class="carousel-prev" aria-label="Previous HOT3D example">‹</button>
+          <div class="carousel-dots" role="tablist"></div>
+          <span class="carousel-counter">– / –</span>
+          <button type="button" class="carousel-next" aria-label="Next HOT3D example">›</button>
+        </div>
+        <p class="carousel-note"></p>
+      </div>
+
+      <p class="legend">
+        <span><i style="background:#48c8d7"></i> our mesh</span>
+        <span><i style="background:#6296ed"></i> GT left hand</span>
+        <span><i style="background:#e77969"></i> GT right hand</span>
+      </p>
+    </section>
+
+    <template id="viewer-template">
+        <article class="viewer" tabindex="0">
+          <div class="viewer-viewport">
+            <div class="viewer-3d"></div>
+            <div class="viewer-poster" role="button" aria-label="Load interactive viewer"></div>
+            <!-- Chrome lives INSIDE the viewport so it never covers the caption strip below. -->
+            <div class="viewer-topleft">
+              <button type="button" class="viewer-reset" title="Reset view" aria-label="Reset view">⌂</button>
+              <button type="button" class="viewer-camera" title="Follow the capture camera (drag or press again to release)" aria-label="Follow the capture camera">📷</button>
+              <button type="button" class="viewer-joints" title="Show / hide joint axes" aria-label="Toggle joint axes">⟲</button>
+              <button type="button" class="viewer-fullscreen" title="Fullscreen" aria-label="Fullscreen">⛶</button>
+            </div>
+            <div class="viewer-panel">
+              <figure>
+                <canvas class="viewer-observed" aria-label="Observed frame"></canvas>
+                <figcaption>Observed</figcaption>
+              </figure>
+              <figure>
+                <canvas class="viewer-overlay" aria-label="Reconstruction reprojected onto the frame"></canvas>
+                <figcaption>Ours, reprojected</figcaption>
+              </figure>
+            </div>
+            <div class="viewer-timeline">
+              <button type="button" class="viewer-play" aria-label="Play / pause"></button>
+              <input class="viewer-slider" type="range" min="0" max="0" value="0" aria-label="Frame">
+              <span class="viewer-count">– / –</span>
+            </div>
+          </div>
+          <div class="viewer-caption">
+            <span class="viewer-title"></span>
+            <span class="viewer-source"></span>
+            <span class="viewer-joints-readout"></span>
+            <span class="viewer-status"></span>
+          </div>
+        </article>
+    </template>
+
+  </main>
+
+  <script type="module" src="js/carousel.js?v=20260911d"></script>
+  <script type="module" src="js/timelapse.js?v=20260911d"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+/* One viewer card. Layout: the 3D viewport fills the card; the image panel
+   floats top-right, the small controls top-left, the timeline along the bottom.
+   (A caption strip under the viewport exists in the markup but is hidden.) */
+.viewer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--panel);
+  outline: none;
+}
+.viewer:focus-visible { border-color: var(--accent); }
+
+.viewer-viewport {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #101214;
+  overflow: hidden;
+}
+/* The shared WebGL canvas is parented here; the split variant shrinks it to
+   the left column. */
+.viewer-3d { position: absolute; inset: 0; }
+.viewer-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+/* Poster: a pre-rendered shot of this slide's 3D view (scripts/render_posters.py),
+   shown until the slide is live; clicking it brings the slide live. */
+.viewer-poster {
+  position: absolute;
+  inset: 0;
+  background: #101214 center / cover no-repeat;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+.viewer.is-live .viewer-poster { opacity: 0; pointer-events: none; }
+/* While a poster is being captured, hide the chrome that the live card draws
+   on top anyway (the image panel stays: it is part of the picture). */
+.viewer.is-capturing .viewer-topleft,
+.viewer.is-capturing .viewer-timeline { visibility: hidden; }
+
+/* Chrome overlaid on the viewport */
+.viewer-topleft {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+}
+.viewer-topleft button,
+.viewer-play {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(80, 88, 97, .8);
+  border-radius: 0;
+  background: rgba(19, 22, 25, .88);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.viewer-topleft button:hover, .viewer-play:hover { background: rgba(40, 46, 52, .95); }
+.viewer-topleft button.active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+/* The joint toggle only exists for articulated examples. */
+.viewer:not(.has-joints) .viewer-joints { display: none; }
+.viewer-joints.active { color: #e0c341; }
+
+.viewer-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(46%, 440px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--panel);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  pointer-events: none;
+}
+/* A smooth bake has pictures at its keyframes only; in between, the panel
+   simply holds the last one (`.is-between` is set, but nothing dims: a fading
+   photo reads as an exposure change). */
+.viewer-panel figure { min-width: 0; margin: 0; }
+.viewer-panel figure + figure { border-left: 1px solid var(--border); }
+.viewer-panel canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 7 / 5;
+  background: #090a0b;
+}
+/* Variant: panel in the bottom-right corner, just above the timeline
+   (10px inset + 50px timeline + 10px gap). HOT3D uses it: the object sits
+   in the upper half of those frames, so a top corner panel covers the action. */
+.viewer[data-panel="bottom-right"] .viewer-panel {
+  top: auto;
+  bottom: 70px;
+  width: min(34%, 320px);   /* square frames are taller than 7:5 ones */
+}
+.viewer:fullscreen[data-panel="bottom-right"] .viewer-panel,
+.viewer.is-fullscreen[data-panel="bottom-right"] .viewer-panel {
+  width: min(30%, 440px);
+}
+.viewer-panel figcaption {
+  overflow: hidden;
+  padding: 4px 7px;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Variant: SPLIT card, half and half. The 3D view takes the left column and
+   the panel the whole right column, showing only the frame with our model
+   re-rendered over it (in-the-wild examples). The observed-only figure is
+   dropped. */
+.viewer[data-panel="split"] { --split: 50%; }
+.viewer[data-panel="split"] .viewer-3d { right: var(--split); }
+.viewer[data-panel="split"] .viewer-panel {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: var(--split);
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0;
+  background: #0b0c0e;
+  box-shadow: none;
+}
+.viewer[data-panel="split"] .viewer-panel figure:first-child { display: none; }
+.viewer[data-panel="split"] .viewer-panel figure {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  border-left: 0;
+}
+.viewer[data-panel="split"] .viewer-panel canvas {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  aspect-ratio: auto !important;
+  object-fit: contain;
+  background: #0b0c0e;
+}
+/* No label under the frame: the picture speaks for itself (the text stays in
+   the DOM for assistive tech). */
+.viewer[data-panel="split"] .viewer-panel figcaption { display: none; }
+.viewer[data-panel="split"] .viewer-timeline { right: calc(var(--split) + 10px); }
+
+.viewer-timeline {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  grid-template-columns: 36px minmax(80px, 1fr) max-content;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: rgba(25, 28, 32, .92);
+  backdrop-filter: blur(8px);
+}
+.viewer-play::before { content: "▶"; }
+.viewer.is-playing .viewer-play::before { content: "❚❚"; font-size: 12px; }
+.viewer-slider {
+  width: 100%;
+  height: 28px;           /* comfortable touch target */
+  margin: 0;
+  accent-color: var(--accent);
+}
+.viewer-count {
+  min-width: 48px;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* The caption strip (title, source, joint readout, loading status) is kept in
+   the DOM for the carousel dots' labels and the tests, but no card shows it:
+   the visitor sees the viewport alone. */
+.viewer-caption {
+  display: none;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.viewer-title { font-weight: 650; }
+.viewer-source { color: var(--muted); font-size: 13px; }
+.viewer-joints-readout {
+  color: #e0c341;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.viewer-joints-readout:empty { display: none; }
+.viewer-status { margin-left: auto; color: #6f7a84; font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Fullscreen: real (API) and pseudo (iOS) look the same. */
+.viewer:fullscreen, .viewer.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  border-radius: 0;
+}
+.viewer:fullscreen .viewer-viewport, .viewer.is-fullscreen .viewer-viewport {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: 0;
+}
+.viewer:fullscreen .viewer-caption, .viewer.is-fullscreen .viewer-caption {
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+.viewer:fullscreen .viewer-panel, .viewer.is-fullscreen .viewer-panel {
+  width: min(40%, 560px);
+}
+/* The split card keeps its half in fullscreen too (the cap above would leave a
+   dead band between the 3D view and the frame on a wide screen). */
+.viewer:fullscreen[data-panel="split"] .viewer-panel,
+.viewer.is-fullscreen[data-panel="split"] .viewer-panel {
+  width: var(--split);
+}
+
+/* Narrow screens: taller card so the panel and the timeline never collide,
+   and a panel that stacks its two images. */
+@media (max-width: 640px) {
+  .viewer-viewport { aspect-ratio: 4 / 5; }
+  .viewer-panel {
+    grid-template-columns: 1fr;
+    width: 42%;
+  }
+  .viewer-panel figure + figure { border-left: 0; border-top: 1px solid var(--border); }
+  .viewer-topleft { flex-direction: column; }
+  .viewer-caption { font-size: 13px; }
+
+  /* Split card stacks: 3D on top, the re-rendered frame below. */
+  .viewer[data-panel="split"] .viewer-3d { right: 0; bottom: 46%; }
+  .viewer[data-panel="split"] .viewer-panel,
+  .viewer:fullscreen[data-panel="split"] .viewer-panel,
+  .viewer.is-fullscreen[data-panel="split"] .viewer-panel {
+    top: auto;
+    left: 0;
+    width: auto;
+    height: 46%;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .viewer[data-panel="split"] .viewer-timeline { right: 10px; bottom: calc(46% + 10px); }
+}

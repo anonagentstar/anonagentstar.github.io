@@ -1,0 +1,236 @@
+:root {
+  color-scheme: dark;
+  --bg: #101214;
+  --panel: #191c20;
+  --surface: #22262b;
+  --border: #343a41;
+  --text: #e8ecef;
+  --muted: #929ca6;
+  --accent: #f5d1b8;   /* orange, dim: rgb(0.96, 0.82, 0.72) */
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap {
+  width: min(1040px, 100% - 32px);
+  margin: 0 auto;
+}
+
+/* ── hero ── */
+.hero {
+  padding: clamp(40px, 8vw, 88px) 0 clamp(28px, 5vw, 48px);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(ellipse at top, #1a2126 0%, var(--bg) 70%);
+}
+.hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.subtitle { margin: 0 0 22px; color: var(--muted); font-size: clamp(16px, 2.2vw, 19px); }
+.authors { margin: 0; font-size: clamp(15px, 2vw, 18px); }
+.authors a { color: var(--text); }
+.authors sup, .affiliations sup { color: var(--muted); font-size: .65em; }
+.affiliations { margin: 6px 0 22px; color: var(--muted); font-size: 15px; }
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.button {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 15px;
+}
+.button:hover { text-decoration: none; border-color: #4d5760; background: #2a3037; }
+
+/* ── sections ── */
+main { padding-bottom: clamp(36px, 6vw, 64px); }
+main section { padding: clamp(28px, 5vw, 48px) 0 0; }
+h2 {
+  margin: 0 0 12px;
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 650;
+}
+#abstract p { margin: 0; color: #cfd6dc; text-align: justify; hyphens: auto; }
+.lede { margin: 0 0 16px; color: var(--muted); }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 0;
+  vertical-align: -1px;
+}
+
+/* ── agentic timelapse: frames → video, as a diagram ── */
+.timelapse {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+.timelapse-frames, .timelapse-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+}
+/* The video wears the viewer cards' timeline (viewer.css .viewer-timeline,
+   accent slider) along its bottom edge, inset like on the cards. Playing state
+   comes from the same is-playing class, set by js/timelapse.js. */
+.timelapse-clip { position: relative; min-width: 0; }
+.timelapse-clip.is-playing .viewer-play::before { content: "❚❚"; font-size: 12px; }
+/* The arrow: a line with a head, in a dim orange. */
+.timelapse { --arrow: #b8792f; }
+.timelapse-arrow {
+  position: relative;
+  height: 2px;
+  background: var(--arrow);
+}
+.timelapse-arrow::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: -1px;
+  border: 7px solid transparent;
+  border-right: 0;
+  border-left: 12px solid var(--arrow);
+}
+@media (max-width: 640px) {
+  .timelapse { grid-template-columns: 1fr; }
+  .timelapse-arrow { width: 2px; height: 36px; margin: 0 auto; }
+  .timelapse-arrow::after {
+    top: auto;
+    right: -6px;
+    bottom: -1px;
+    border: 7px solid transparent;
+    border-bottom: 0;
+    border-top: 12px solid var(--arrow);
+  }
+}
+
+pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--panel);
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+footer {
+  margin-top: clamp(36px, 6vw, 64px);
+  padding: 20px 0 max(24px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── carousel ── */
+.carousel { position: relative; }
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track > .viewer {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+.carousel-prev, .carousel-next {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+.carousel-prev:hover, .carousel-next:hover { background: #2a3037; }
+.carousel-dots { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.carousel-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #3d454d;
+  cursor: pointer;
+}
+.carousel-dots button.active { background: var(--accent); }
+/* Thumbnails (scripts/make_thumbs.py): the first frame of each example; the
+   live one carries the accent frame, the others sit dimmed. */
+.carousel-dots button.thumb {
+  width: 56px;
+  height: 56px;
+  border: 2px solid transparent;
+  background: var(--panel);
+  opacity: .55;
+  transition: opacity .15s;
+}
+.carousel-dots button.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.carousel-dots button.thumb:hover { opacity: .85; }
+.carousel-dots button.thumb.active { border-color: var(--accent); background: var(--panel); opacity: 1; }
+@media (max-width: 640px) {
+  .carousel-nav { gap: 8px; }
+  .carousel-dots { gap: 5px; }
+  .carousel-dots button.thumb { width: 36px; height: 36px; }
+  .carousel-counter { display: none; }
+}
+.carousel-counter {
+  min-width: 48px;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.carousel-note { margin: 8px 0 0; color: #e0a06a; font-size: 14px; text-align: center; }
+.carousel-note:empty { display: none; }
+
+body.has-fullscreen-viewer { overflow: hidden; }
